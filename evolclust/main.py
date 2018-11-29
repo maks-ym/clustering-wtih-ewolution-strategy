@@ -2,6 +2,7 @@
 
 import data
 import cluster
+from matplotlib import pyplot as plt
 
 
 if __name__ == "__main__":
@@ -12,15 +13,27 @@ if __name__ == "__main__":
     # compare with k-means
     # visualize
 
-    #read test
-    file_path = "data/hapt/train/X_train.txt"
-    train_data = []
-    with open(file_path) as in_file:
-        for line in in_file:
-            parsed_line = [float(x) for x in line.rstrip("\n").split(" ")]
-            train_data.append(parsed_line)
+    exp_data = data.HAPT()
     
-    for row in train_data:
-        print(len(row))
-    
-    print(len(train_data))
+
+    # print(exp_data.test_data)
+    # print(exp_data.test_data.shape)
+    # print(exp_data.test_labels)
+    # print(len(exp_data.test_data))
+    # print(len(exp_data.test_labels))
+
+    data2 = data.HAPT()
+    a_ind = 10
+    data2.test_data = exp_data.test_data[:a_ind,:5]
+    data2.test_labels = exp_data.test_labels[:a_ind]
+    print(data2.test_labels)
+    print(data2.test_data)
+
+
+    # train_data = data.HAPT("data/hapt/")
+    # train_data.load_train("data/hapt/train/")
+
+    # print(train_data.train_data)
+    # print(train_data.train_labels)
+    # print(len(train_data.train_data))
+    # print(len(train_data.train_labels))
