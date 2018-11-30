@@ -14,8 +14,21 @@ class HAPT:
         self._test_attrs = None
         self._train_labels = None
         self._test_labels = None
-        self._labels = {}# map of labels
-        self._statistics = {}
+        self._labels = {}
+
+
+    def get_labels_map(self):
+        '''
+        get names for activity labels (int to string)
+        '''
+        if not self._labels:
+            file_path = os.path.join(self.data_dir_path, "activity_labels.txt")
+            with open(file_path) as l_file:
+                for line in l_file:
+                    line_arr = line.strip("\n ").split(" ")
+                    self._labels[int(line_arr[0])] = line_arr[1]
+        return self._labels
+
 
     @utils.timeit
     def get_train_feats(self):
