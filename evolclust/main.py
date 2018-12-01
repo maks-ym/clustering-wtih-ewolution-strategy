@@ -7,10 +7,9 @@ from matplotlib import pyplot as plt
 
 if __name__ == "__main__":
     # read data
-    # convert (FFT)
     # train 
     # predict (test)
-    # compare with k-means
+    # compare with ground truth
     # visualize
 
     exp_data = data.HAPT()
