@@ -49,4 +49,16 @@ class TestCentroids:
 
 
 class TestEvaluate:
-    pass
+    def test_informatinon_gain(self):
+        true_labs = [1,1,2,2,1,2,1,2,2,3,3,3,1,3,2,1,2,3,1,3]
+        group_labs =[1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,1,1]
+        h = cluster.Evaluate.informationGain(true_labs, group_labs)
+        assert str(h)[:7] == "0.05913"
+        true_labs  = np.array(true_labs)
+        group_labs = np.array(group_labs)
+        h = cluster.Evaluate.informationGain(true_labs, group_labs)
+        assert str(h)[:7] == "0.05913"
+
+
+    def test_silhourtte(self):
+        pass

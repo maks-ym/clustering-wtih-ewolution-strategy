@@ -2,7 +2,7 @@
 
 from numpy.linalg import norm
 import numpy as np
-
+from math import log
 
 class Distance:
     @staticmethod
@@ -17,7 +17,7 @@ class Distance:
         b = np.array(b)
         return norm(a-b, ord=2)
 
-#TODO: tests
+
 class Centroids:
     @staticmethod
     def cluster(data, centers, dist_func="euclid"):
@@ -39,8 +39,30 @@ class Centroids:
 class Evaluate:
 
     @staticmethod
-    def informationGain():
-        pass
+    def informationGain(true_labs, grouped_labs):
+        # h - entropy
+        def entropy_addend(probab, log_base):
+            return - probab * log(probab, log_base)
+        t_labs = np.array(true_labs)
+        g_labs = np.array(grouped_labs)
+        # true data entropy
+        _, cnts = np.unique(t_labs, return_counts=True)
+        data_h = 0
+        for c in cnts:
+            data_h += entropy_addend(c/len(t_labs), len(cnts))
+        # entropy in clusters (groups)
+        g_uniq, g_cnts = np.unique(g_labs, return_counts=True)
+        total_h = 0
+        for g_i, cnt_i in zip(g_uniq, g_cnts):
+            cur_t_labs = t_labs[g_labs==g_i]
+            _, cur_cnts = np.unique(cur_t_labs, return_counts=True)
+            cur_h = 0
+            for cnt in cur_cnts:
+                cur_h += entropy_addend(cnt/cnt_i, len(cnts))
+            total_h += cnt_i/len(t_labs) * cur_h
+        # information gain
+        return data_h - total_h 
+
 
     @staticmethod
     def silhouette():
