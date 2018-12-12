@@ -3,6 +3,7 @@
 from numpy.linalg import norm
 import numpy as np
 from math import log
+from sklearn.metrics import silhouette_score
 
 class Distance:
     @staticmethod
@@ -65,5 +66,6 @@ class Evaluate:
 
 
     @staticmethod
-    def silhouette():
-        pass
+    def silhouette(data, labels, dist_func=Distance.euclidean):
+        # no true labels needed
+        return silhouette_score(data, labels, metric=dist_func)
