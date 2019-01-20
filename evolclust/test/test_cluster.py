@@ -1,28 +1,37 @@
+import data
 import cluster
+
 import numpy as np
 import os
-
-# to remove (maybe)
 import time
-from sklearn.metrics import silhouette_score
+
 
 class TestDistance:
-    def test_manhattan_array(self):
-        a = [1,3,5,7,9]
-        b = [2,4,6,8,0]
-        c = [1,3,5,7,9]
+    def test_manhattan_distance(self):
+        a = [1, 3, 5, 7, 9]
+        b = [2, 4, 6, 8, 0]
+        c = [1, 3, 5, 7, 9]
         d1 = cluster.Distance.manhattan(a, b)
         assert d1 == 13
         d2 = cluster.Distance.manhattan(a, c)
         assert d2 == 0
     
-    def test_euclidean_array(self):
-        a = [1,3,5,7,9]
-        b = [2,4,6,8,0]
-        c = [1,3,5,7,9]
+    def test_euclidean_distance(self):
+        a = [1, 3, 5, 7, 9]
+        b = [2, 4, 6, 8, 0]
+        c = [1, 3, 5, 7, 9]
         d1 = cluster.Distance.euclidean(a, b)
         assert str(d1)[:11] == "9.219544457"
         d2 = cluster.Distance.euclidean(a, c)
+        assert d2 == 0
+
+    def test_cosine_distance(self):
+        a = [1, 3, 5, 7, 9]
+        b = [2, 4, 6, 8, 0]
+        c = [1, 3, 5, 7, 9]
+        d1 = cluster.Distance.cosine(a, b)
+        assert str(d1)[:11] == "0.289330945"
+        d2 = cluster.Distance.cosine(a, c)
         assert d2 == 0
 
 
@@ -30,6 +39,7 @@ class TestCentroids:
     cur_path = os.path.dirname(os.path.abspath(__file__))
     samples_path = os.path.join(cur_path, "test_data/x_test.txt")
     labels_path = os.path.join(cur_path, "test_data/y_test.txt")
+
     def test_centroids_cluster(self):
         # read
         samples = np.loadtxt(self.samples_path)
@@ -54,57 +64,11 @@ class TestCentroids:
 
 class TestEvaluate:
     def test_informatinon_gain(self):
-        true_labs = [1,1,2,2,1,2,1,2,2,3,3,3,1,3,2,1,2,3,1,3]
-        group_labs =[1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,1,1]
+        true_labs = [1, 1, 2, 2, 1, 2, 1, 2, 2, 3, 3, 3, 1, 3, 2, 1, 2, 3, 1, 3]
+        group_labs =[1, 1, 1, 2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 1, 1]
         h = cluster.Evaluate.informationGain(true_labs, group_labs)
         assert str(h)[:7] == "0.05913"
         true_labs  = np.array(true_labs)
         group_labs = np.array(group_labs)
         h = cluster.Evaluate.informationGain(true_labs, group_labs)
         assert str(h)[:7] == "0.05913"
-
-# TODO: clean from unnecessary test
-    def test_silhouette(self):
-        total_test_time_start = time.time()
-
-        cur_path = os.path.dirname(os.path.abspath(__file__))
-        test_samples_path = os.path.join(cur_path, "test_data/x_test.txt")
-        test_labels_path = os.path.join(cur_path, "test_data/y_test.txt")
-        train_samples_path = os.path.join(cur_path, "test_data/x_train.txt")
-        train_labels_path = os.path.join(cur_path, "test_data/y_train.txt")
-        
-        test_samples = np.loadtxt(test_samples_path)
-        test_labels = np.loadtxt(test_labels_path)
-        train_samples = np.loadtxt(train_samples_path)
-        train_labels = np.loadtxt(train_labels_path)
-        
-        distances = ["cosine", "braycurtis", "canberra", "chebyshev", "correlation", "hamming", "sqeuclidean", "euclidean", "manhattan"]
-        # train, test
-        # labels = [train_labels, test_labels]
-        # samples = [train_samples, test_samples]
-        labels = [test_labels]
-        samples = [test_samples]
-
-
-        scores = []
-        print("distance\ttest\ttime")
-        for dist_f in distances:
-            cur_scores = []
-            cur_times = []
-            for labs, smpls in zip(labels, samples):
-                cur_start = time.time()
-                # s = cluster.Evaluate.silhouette(smpls, labs, dist_func=dist_f)
-                s = silhouette_score(smpls, labs, metric=dist_f)
-                cur_scores.append(s)
-                cur_times.append(time.time() - cur_start)
-            scores.append(cur_scores)
-            print("{}\t{:.3f}\t{:.2f}".format(
-                dist_f, cur_scores[0], cur_times[0]))
-        ## manhattan
-        # s = cluster.Evaluate.silhouette(samples, true_labels, dist_func="manhattan")
-        # assert s == 0.9
-        ## euclidean
-        # s = cluster.Evaluate.silhouette(samples, true_labels, dist_func="euclidean")
-        # assert s == 0.9
-        print("total time of silhouette test: {}".format(time.time() - total_test_time_start))
-        assert False

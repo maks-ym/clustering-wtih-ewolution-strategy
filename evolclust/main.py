@@ -3,6 +3,7 @@
 import data
 import cluster
 from matplotlib import pyplot as plt
+import utils
 
 
 if __name__ == "__main__":
@@ -12,27 +13,16 @@ if __name__ == "__main__":
     # compare with ground truth
     # visualize
 
-    exp_data = data.HAPT()
-    
-
-    # print(exp_data.test_data)
-    # print(exp_data.test_data.shape)
-    # print(exp_data.test_labels)
-    # print(len(exp_data.test_data))
-    # print(len(exp_data.test_labels))
-
     data2 = data.HAPT()
+    data2.load_all_data()
     a_ind = 10
-    data2.test_data = exp_data.test_data[:a_ind,:5]
-    data2.test_labels = exp_data.test_labels[:a_ind]
-    print(data2.test_labels)
-    print(data2.test_data)
 
+    # Plot not raw test set
+    # utils.plot_clusters(data2.test_data, data2.test_labels, data2.get_labels_map())
+    # utils.plot_clusters_3d(data2.test_data, data2.test_labels, data2.get_labels_map())
 
-    # train_data = data.HAPT("data/hapt/")
-    # train_data.load_train("data/hapt/train/")
-
-    # print(train_data.train_data)
-    # print(train_data.train_labels)
-    # print(len(train_data.train_data))
-    # print(len(train_data.train_labels))
+    data2.aggregate_groups()
+    # plot aggregated test set
+    utils.plot_clusters(data2.get_train_data(), data2.get_aggregated_train_labels(), data2.get_aggregated_labels_map())
+    utils.plot_clusters(data2.get_test_data(), data2.get_aggregated_test_labels(), data2.get_aggregated_labels_map())
+    # utils.plot_clusters_3d(data2.get_test_data(), data2.get_aggregated_test_labels(), data2.get_aggregated_labels_map())
