@@ -8,6 +8,7 @@ from sklearn.metrics import silhouette_score
 
 
 class Distance:
+
     @staticmethod
     def manhattan(a, b):
         a = np.array(a)
@@ -26,9 +27,10 @@ class Distance:
 
 
 class Centroids:
+
     @staticmethod
     def cluster(data, centers, dist_func=Distance.euclidean):
-        ''' dist_func=["euclid","manhat"] '''
+        ''' dist_func=["euclid","manhat", "cosine"] '''
         # dist_func = Distance.manhattan if dist_func == "manhat" else Distance.euclidean
         samples_num = len(data)
         dist_array = np.full(samples_num, float("inf"))
@@ -42,11 +44,10 @@ class Centroids:
         return labels_array
 
 
-# TODO: tests
 class Evaluate:
 
     @staticmethod
-    def informationGain(true_labs, grouped_labs):
+    def information_gain(true_labs, grouped_labs):
         # h - entropy
         def entropy_addend(probab, log_base):
             return - probab * log(probab, log_base)
@@ -74,3 +75,15 @@ class Evaluate:
     def silhouette(data, labels, dist_func=Distance.euclidean):
         # no true labels needed
         return silhouette_score(data, labels, metric=dist_func)
+
+class Utils:
+
+    @staticmethod
+    def adjust_labels(labels, true_labs):
+        """
+        Make labels after clustering comparable to true labels.
+        Straightforward approach - based on cluster sizes only.
+
+        return : adjusted labels vector
+        """
+        pass
