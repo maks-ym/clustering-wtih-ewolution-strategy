@@ -32,6 +32,41 @@ def timeit(method):
     return timed
 
 
+def plot_scores(iters, scores, adapt_function, params_tuple):
+    """
+    x_axis : iters
+    y_axis : scores_max, scores_min, scores_avg, scores_median
+    adapt_function : {"silhouette"|"info_gain"}
+    """
+
+    fig = plt.figure(figsize=(8, 8))
+    ax = fig.add_subplot(1, 1, 1)
+
+    ax.set_xlabel('Generations (total {})'.format(len(iters-1)), fontsize=15)
+    ax.set_ylabel('{} score (max, min, avg, median)'.format(adapt_function), fontsize=15)
+    ax.set_title('Convergence plot\n{}'.format(params_tuple), fontsize=20)
+
+    colors = plot_colors
+
+    scores_names = ["max", "min", "avg", "median"]
+
+    max_scores = [sc_list.max() for sc_list in scores]
+    min_scores = [sc_list.min() for sc_list in scores]
+    avg_scores = [sc_list.mean() for sc_list in scores]
+    med_scores = [sc_list.median() for sc_list in scores]
+    scores = [max_scores, min_scores, avg_scores, med_scores]
+
+    line_styles = ['-.', ':', '-', '--']
+
+    for c_name, c_scores, c_style in zip(scores_names, scores, line_styles):
+        ax.plot(iters, c_scores, linestyle=c_style)
+
+    ax.legend(scores_names)
+    # ax.grid()
+    plt.show()
+
+
+
 def plot_clusters(data, labels, labels_map=None):
     # PCA
     data = np.array(data)

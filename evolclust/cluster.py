@@ -5,6 +5,7 @@ from math import log
 
 from scipy.spatial.distance import cosine
 from sklearn.metrics import silhouette_score
+from sklearn.metrics import confusion_matrix
 
 
 class Distance:
@@ -30,7 +31,7 @@ class Centroids:
 
     @staticmethod
     def cluster(data, centers, dist_func=Distance.euclidean):
-        ''' dist_func=["euclid","manhat", "cosine"] '''
+        ''' dist_func= {Distance.euclidean|Distance.manhattan|Distance.cosine} '''
         # dist_func = Distance.manhattan if dist_func == "manhat" else Distance.euclidean
         samples_num = len(data)
         dist_array = np.full(samples_num, float("inf"))
@@ -86,4 +87,11 @@ class Utils:
 
         return : adjusted labels vector
         """
-        pass
+        # get sorted labels
+        true_uniq = np.unique(true_labs)
+        labs_uniq = np.unique(labels)
+        # map corresponding
+        adjust_map = {k: v  for k, v in zip(labs_uniq, true_uniq)}
+        adj_labs = [adjust_map[lab] for lab in labels]
+
+        return np.array(adj_labs)
