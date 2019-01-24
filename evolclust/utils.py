@@ -1,4 +1,6 @@
+import os
 import time
+
 
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
@@ -32,17 +34,18 @@ def timeit(method):
     return timed
 
 
-def plot_scores(iters, scores, adapt_function, params_tuple):
+def plot_scores(iters, scores, adapt_function, params_tuple, to_file=False, out_dir="logs"):
     """
     x_axis : iters
     y_axis : scores_max, scores_min, scores_avg, scores_median
     adapt_function : {"silhouette"|"info_gain"}
+
     """
 
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(1, 1, 1)
 
-    ax.set_xlabel('Generations (total {})'.format(len(iters-1)), fontsize=12)
+    ax.set_xlabel('Generations (total {}, with initial)'.format(len(iters-1)), fontsize=12)
     ax.set_ylabel('{} score (max, min, avg, median)'.format(adapt_function), fontsize=12)
     ax.set_title('Convergence plot\n{}'.format(params_tuple), fontsize=14)
 
@@ -63,7 +66,13 @@ def plot_scores(iters, scores, adapt_function, params_tuple):
 
     ax.legend(scores_names)
     # ax.grid()
-    plt.show()
+    if to_file:
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
+        stamp = str(time.time())
+        plt.savefig(os.path.join(out_dir, stamp + '_plot.png'), bbox_inches='tight')
+    else:
+        plt.show()
 
 
 

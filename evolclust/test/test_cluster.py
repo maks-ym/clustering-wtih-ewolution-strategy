@@ -53,11 +53,11 @@ class TestCentroids:
             centers.append(np.mean(cur_samples, axis=0))
         centers = np.array(centers)
         # (manhattan dist)
-        labels_1 = cluster.Centroids.cluster(samples, centers) + 1
+        labels_1 = cluster.Centroids.cluster(samples, centers, "manhattan") + 1
         recall_1 = len(labels_1[labels_1==true_labels])/len(true_labels)
-        assert recall_1 > 0.8
+        assert recall_1 > 0.75
         # (euclidean dist)
-        labels_2 = cluster.Centroids.cluster(samples, centers) + 1
+        labels_2 = cluster.Centroids.cluster(samples, centers, "euclidean") + 1
         recall_2 = len(labels_2[labels_2==true_labels])/len(true_labels)
         assert recall_2 > 0.8
 

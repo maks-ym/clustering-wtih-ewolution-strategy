@@ -25,7 +25,7 @@ def parse_arguments(sys_args):
     parser.add_argument('--prob_mutation', type=float, default=0.05, help='mutation probability')
     parser.add_argument('--aggregate', default=False, action='store_true', help='aggregate data groups')
     parser.add_argument('--adapt_function', type=str, default="silhouette",
-                        choices=['silh', 'info_gain', "silhouette"], help='silhouette or information gain')
+                        choices=['silh', 'info', 'info_gain', "silhouette"], help='silhouette or information gain')
     parser.add_argument('--dist_measure', type=str, default="euclidean",
                         choices=['eucl', 'manh', 'cos', "euclidean", "manhattan", "cosine"],
                         help='euclidean, manhattan, cosine')
@@ -92,7 +92,7 @@ def main():
 
     # evolution
     # =========
-    iterations, scores, generations, total_time = evolution.run_SGA(
+    iterations, scores, generations, total_time, log_dir = evolution.run_SGA(
             args.iter_num, exp_data, exp_labs, args.pop_num, 
             args.prob_cross, args.prob_mutation, exp_centroids_num, 
             args.adapt_function, args.dist_measure, log_dir="logs")
@@ -104,7 +104,7 @@ def main():
     # =========
     utils.plot_scores(iterations, scores, args.adapt_function, 
             (args.pop_num, args.prob_cross, args.prob_mutation, len(exp_labs), 
-            args.adapt_function, args.dist_measure))
+            args.adapt_function, args.dist_measure), to_file=True, out_dir=log_dir)
 
 if __name__ == "__main__":
     main()

@@ -38,9 +38,9 @@ class Centroids:
 
     @staticmethod
     def cluster(data, centers, dist_func="euclidean"):
-        '''
+        """
         dist_func : {"euclidean"|"manhattan"|"cosine"}
-        '''
+        """
         dist_func = dist_str2func[dist_func]
 
         samples_num = len(data)
