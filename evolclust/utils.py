@@ -42,9 +42,9 @@ def plot_scores(iters, scores, adapt_function, params_tuple):
     fig = plt.figure(figsize=(8, 8))
     ax = fig.add_subplot(1, 1, 1)
 
-    ax.set_xlabel('Generations (total {})'.format(len(iters-1)), fontsize=15)
-    ax.set_ylabel('{} score (max, min, avg, median)'.format(adapt_function), fontsize=15)
-    ax.set_title('Convergence plot\n{}'.format(params_tuple), fontsize=20)
+    ax.set_xlabel('Generations (total {})'.format(len(iters-1)), fontsize=12)
+    ax.set_ylabel('{} score (max, min, avg, median)'.format(adapt_function), fontsize=12)
+    ax.set_title('Convergence plot\n{}'.format(params_tuple), fontsize=14)
 
     colors = plot_colors
 
@@ -53,7 +53,7 @@ def plot_scores(iters, scores, adapt_function, params_tuple):
     max_scores = [sc_list.max() for sc_list in scores]
     min_scores = [sc_list.min() for sc_list in scores]
     avg_scores = [sc_list.mean() for sc_list in scores]
-    med_scores = [sc_list.median() for sc_list in scores]
+    med_scores = [np.median(sc_list) for sc_list in scores]
     scores = [max_scores, min_scores, avg_scores, med_scores]
 
     line_styles = ['-.', ':', '-', '--']

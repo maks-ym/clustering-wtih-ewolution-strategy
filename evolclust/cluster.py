@@ -8,6 +8,7 @@ from sklearn.metrics import silhouette_score
 from sklearn.metrics import confusion_matrix
 
 
+
 class Distance:
 
     @staticmethod
@@ -26,13 +27,22 @@ class Distance:
     def cosine(a, b):
         return cosine(a, b)
 
+dist_str2func = {
+    "euclidean": Distance.euclidean,
+    "manhattan": Distance.manhattan,
+    "cosine": Distance.cosine
+}
+
 
 class Centroids:
 
     @staticmethod
-    def cluster(data, centers, dist_func=Distance.euclidean):
-        ''' dist_func= {Distance.euclidean|Distance.manhattan|Distance.cosine} '''
-        # dist_func = Distance.manhattan if dist_func == "manhat" else Distance.euclidean
+    def cluster(data, centers, dist_func="euclidean"):
+        '''
+        dist_func : {"euclidean"|"manhattan"|"cosine"}
+        '''
+        dist_func = dist_str2func[dist_func]
+
         samples_num = len(data)
         dist_array = np.full(samples_num, float("inf"))
         labels_array = np.zeros(samples_num)
@@ -73,7 +83,7 @@ class Evaluate:
         return data_h - total_h 
 
     @staticmethod
-    def silhouette(data, labels, dist_func=Distance.euclidean):
+    def silhouette(data, labels, dist_func="euclidean"):
         # no true labels needed
         return silhouette_score(data, labels, metric=dist_func)
 
