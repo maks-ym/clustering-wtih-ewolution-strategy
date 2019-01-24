@@ -31,6 +31,7 @@ def parse_arguments(sys_args):
                         help='euclidean, manhattan, cosine')
     parser.add_argument('--logdir', type=str, default="logs", help='aggregate data groups')
     parser.add_argument('--data', type=str, default="train", choices=['train', 'test'], help='aggregate data groups')
+    parser.add_argument('--showdata', default=False, action='store_true', help='only show data to be used in experiment')
 
     args = parser.parse_args(sys_args)
     args.sys_args = sys_args
@@ -64,19 +65,9 @@ def main():
     hapt_data.load_all_data()
     hapt_data.aggregate_groups()
 
-    # Plot raw test set
-    # if args.showdata:
-        # utils.plot_clusters(data2.test_data, data2.test_labels, data2.get_labels_map())
-        # utils.plot_clusters_3d(data2.test_data, data2.test_labels, data2.get_labels_map())
-
-    # plot aggregated test set
-    # if args.showdata and args.aggregate:
-        # utils.plot_clusters(data2.get_train_data(), data2.get_aggregated_train_labels(), data2.get_aggregated_labels_map())
-        # utils.plot_clusters(data2.get_test_data(), data2.get_aggregated_test_labels(), data2.get_aggregated_labels_map())
-        # utils.plot_clusters_3d(data2.get_test_data(), data2.get_aggregated_test_labels(), data2.get_aggregated_labels_map())
-
     exp_data = hapt_data.get_train_data()
     exp_labs = hapt_data.get_train_labels()
+    exp_labels_map = hapt_data.get_labels_map()
     exp_centroids_num = len(hapt_data.get_labels_map())
 
     if args.data == "test":
@@ -86,9 +77,17 @@ def main():
 
     if args.aggregate:
         exp_labs = hapt_data.get_aggregated_train_labels()
+        exp_labels_map = hapt_data.get_aggregated_labels_map()
         exp_centroids_num = len(hapt_data.get_aggregated_labels_map())
         if args.data == "test":
             exp_labs = hapt_data.get_aggregated_test_labels()
+
+    # Show experiment data
+    # ====================
+
+    if args.showdata:
+        utils.plot_clusters(exp_data, exp_labs, exp_labels_map, True)
+        return
 
     # evolution
     # =========
@@ -96,9 +95,6 @@ def main():
             args.iter_num, exp_data, exp_labs, args.pop_num, 
             args.prob_cross, args.prob_mutation, exp_centroids_num, 
             args.adapt_function, args.dist_measure, log_dir="logs")
-
-    # predict (test)
-    # compare with ground truth
 
     # visualize
     # =========

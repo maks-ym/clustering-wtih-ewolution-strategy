@@ -206,9 +206,9 @@ def run_SGA(iter_num, data, labs, pop_num, prob_cross, prob_mutation, centers_nu
 
     for it in range(iter_num):
         logging.info("\n\n")
-        logging.info("##################################")
-        logging.info("### Generation: {:7}/{:7} ###".format(it+1, iter_num))
-        logging.info("##################################\n")
+        logging.info("#################################")
+        logging.info("### Generation: {:6}/{:6} ###".format(it+1, iter_num))
+        logging.info("#################################\n")
         log_pref = "{}gen {}: ".format(loggin_pref, it+1)
         pop = reproduction(pop, pop_scores, loggin_pref=log_pref)
         pop = crossover(pop, prob_cross, loggin_pref=log_pref)
@@ -228,7 +228,8 @@ def run_SGA(iter_num, data, labs, pop_num, prob_cross, prob_mutation, centers_nu
 
     logging.info("writing log...")
     log_dir = os.path.join(log_dir, "_".join(
-        [timestamp, str(pop_num), str(prob_cross), str(prob_mutation), str(centers_num), adapt_function, dist_measure]))
+        [timestamp, "pop"+str(pop_num), "pc"+str(prob_cross), "pm"+str(prob_mutation), "centrs"+str(centers_num),
+        "iters"+str(iter_num), adapt_function, dist_measure, "ds"+str(len(labs))]))
     if not os.path.isdir(log_dir):
         os.makedirs(log_dir)
     with open(os.path.join(log_dir, timestamp + ".txt"), "w") as out_f:
@@ -247,7 +248,7 @@ def run_SGA(iter_num, data, labs, pop_num, prob_cross, prob_mutation, centers_nu
         out_f.write("results\n")
         out_f.write("best score:\t{}\n".format(scores.max()))
         out_f.write("best score (index):\t{}\n".format(scores.argmax()))
-        out_f.write("total_time:\t{}min{}s\n".format(total_time//60, total_time%60))
+        out_f.write("total_time:\t{}min{}s\n".format(total_time//60, int(total_time%60)))
     logging.info("writing log ended. time: {}".format(total_time))
     logging.info("saving experiment output...")
     with open(os.path.join(log_dir, "iterations.npy"), "wb") as iters_f:
