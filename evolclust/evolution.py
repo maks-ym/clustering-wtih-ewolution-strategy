@@ -82,7 +82,9 @@ def get_adapt_scores(pop_t, data, true_labs, adapt_function="silhouette", dist_m
     # correction (-1 replace with second minimal value) & normalization
     if adapt_function == "silhouette" and len(pop_t) > 1:
         scores = np.array(scores)
-        scores[scores == -1] = sorted(set(scores))[1]
+        uniq_scores = set(scores)
+        if len(uniq_scores) > 2:
+            scores[scores == -1] = sorted(set(uniq_scores))[1]
         scores = (scores + 1)/2
 
     # logging.debug("scores: {}".format(scores))
