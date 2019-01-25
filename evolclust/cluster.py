@@ -16,6 +16,7 @@ class Distance:
         a = np.array(a)
         b = np.array(b)
         return np.linalg.norm(a-b, ord=1)
+        # return abs(np.sum(a - b))
 
     @staticmethod
     def euclidean(a, b):
@@ -86,6 +87,7 @@ class Evaluate:
     def silhouette(data, labels, dist_func="euclidean"):
         # no true labels needed
         return silhouette_score(data, labels, metric=dist_func)
+
 
 class Utils:
 

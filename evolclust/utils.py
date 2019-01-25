@@ -34,6 +34,28 @@ def timeit(method):
     return timed
 
 
+def _plot_scores_core(iters, scores, adapt_function,_subplot=(1,1,1), title="Convergence plot"):
+    plt.subplot(_subplot[0], _subplot[1], _subplot[2])
+
+    plt.xlabel('Generations (total {}, with initial)'.format(len(iters)), fontsize=11, labelpad=-1)
+    plt.ylabel('{} score (max, min, avg, median)'.format(adapt_function), fontsize=11, labelpad=-2)
+    plt.title(title, fontsize=12)
+
+    scores_names = ["max", "min", "avg", "median"]
+    line_styles = ['-.', ':', '-', '--']
+
+    max_scores = [sc_list.max() for sc_list in scores]
+    min_scores = [sc_list.min() for sc_list in scores]
+    avg_scores = [sc_list.mean() for sc_list in scores]
+    med_scores = [np.median(sc_list) for sc_list in scores]
+    scores = [max_scores, min_scores, avg_scores, med_scores]
+
+    for c_scores, c_style in zip( scores, line_styles):
+        plt.plot(iters, c_scores, linestyle=c_style)
+
+    plt.legend(scores_names)
+    plt.grid()
+
 def plot_scores(iters, scores, adapt_function, params_tuple, to_file=False, out_dir="logs"):
     """
     x_axis : iters
@@ -42,34 +64,71 @@ def plot_scores(iters, scores, adapt_function, params_tuple, to_file=False, out_
     """
 
     fig = plt.figure(figsize=(8, 8))
-    ax = fig.add_subplot(1, 1, 1)
+    title = "Convergence plot\n" + "(" +", ".join([str(p) for p in params_tuple]) + ")"
+    _plot_scores_core(iters, scores, adapt_function, _subplot=(1,1,1), title=title)
 
-    ax.set_xlabel('Generations (total {}, with initial)'.format(len(iters-1)), fontsize=12)
-    ax.set_ylabel('{} score (max, min, avg, median)'.format(adapt_function), fontsize=12)
-    ax.set_title('Convergence plot\n{}'.format(params_tuple), fontsize=14)
-
-    colors = plot_colors
-
-    scores_names = ["max", "min", "avg", "median"]
-
-    max_scores = [sc_list.max() for sc_list in scores]
-    min_scores = [sc_list.min() for sc_list in scores]
-    avg_scores = [sc_list.mean() for sc_list in scores]
-    med_scores = [np.median(sc_list) for sc_list in scores]
-    scores = [max_scores, min_scores, avg_scores, med_scores]
-
-    line_styles = ['-.', ':', '-', '--']
-
-    for c_name, c_scores, c_style in zip(scores_names, scores, line_styles):
-        ax.plot(iters, c_scores, linestyle=c_style)
-
-    ax.legend(scores_names)
-    ax.grid()
     if to_file:
         if not os.path.isdir(out_dir):
             os.makedirs(out_dir)
         stamp = str(time.time())
         plt.savefig(os.path.join(out_dir, stamp + '_plot.png'), bbox_inches='tight')
+    else:
+        plt.show()
+
+
+def plot_avg_scores(iterations_list, scores_list, adapt_function, best_indices, params_tuple, to_file=False, out_dirs=[]):
+    """
+    create plot averaged from several experiments
+    """
+
+    exp_num = len(iterations_list)
+    fig = plt.figure(figsize=(20, 10))
+    fig.suptitle("Convergence plot\n" + "(" +", ".join([str(p) for p in params_tuple]) + ")", fontsize=12)
+    
+    # first 4 experiments (as a max)
+
+    for exp_i, sub_place in zip([i for i in range(min(exp_num, 4))], [1,2,5,6]):
+        exp_i_best = scores_list[exp_i][best_indices[exp_i][0]][best_indices[exp_i][1]]
+        _plot_scores_core(iterations_list[exp_i], scores_list[exp_i], adapt_function, _subplot=(2,4,sub_place), 
+                            title="Experiment {} (best {})".format(exp_i, exp_i_best))
+
+    # averaged
+    plt.subplot(1,2,2)
+    scores_list = np.array(scores_list)
+    # avg best
+    avg_best = 0
+    for sc_list, best_ind in zip(scores_list, best_indices):
+        avg_best += sc_list[best_ind[0], best_ind[1]]
+    avg_best /= len(best_indices)
+
+    plt.title("Average of {} experimants (avg best {})".format(len(iterations_list), avg_best))
+    plt.xlabel('Generations (total {}, with initial)'.format(len(iterations_list[0])), fontsize=11)
+    plt.ylabel('{} score (max, min, avg, median)'.format(adapt_function), fontsize=11, labelpad=-1)
+
+    maxima = scores_list.max(axis=2).mean(axis=0)
+    minima = scores_list.min(axis=2).mean(axis=0)
+    means = scores_list.mean(axis=2).mean(axis=0)
+    medians = np.median(scores_list, axis=2).mean(axis=0)
+    assert len(maxima) == len(iterations_list[0])
+    assert len(minima) == len(iterations_list[0])
+    assert len(means) == len(iterations_list[0])
+    assert len(medians) == len(iterations_list[0])
+
+    lists = [maxima, minima, means, medians]
+    scores_names = ["max", "min", "avg", "median"]
+    line_styles = ['-.', ':', '-', '--']
+
+    for c_scores, c_style in zip(lists, line_styles):
+        plt.plot(iterations_list[0], c_scores, linestyle=c_style)
+
+    plt.legend(scores_names)
+    plt.grid()
+    if to_file:
+        out_dir = out_dirs[-1].rstrip("/") + "_averaged"
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
+        stamp = str(time.time())
+        plt.savefig(os.path.join(out_dir, stamp + '_plot_avg.png'), bbox_inches='tight')
     else:
         plt.show()
 
@@ -114,7 +173,7 @@ def plot_clusters_2d(data, labels, labels_map=None, chosen_comp=[0,1], grid=Fals
     principal_components = get_principal_components(data, 3)
     # plot each cluster
     fig = plt.figure(figsize=(8, 8))
-    fig.suptitle("PCA", fontsize=13)
+    fig.suptitle("PCA", fontsize=12)
     _clusters_2d_core_plot(principal_components, labels, chosen_comp, (1,1,1), 
                            labels_map=labels_map, grid=grid)
 
@@ -127,7 +186,7 @@ def plot_clusters_3d(data, labels, labels_map=None):
 
     # plot each cluster
     fig = plt.figure(figsize=(8, 8))
-    fig.suptitle("PCA", fontsize=13)
+    fig.suptitle("PCA", fontsize=12)
     ax = fig.add_subplot(111, projection='3d')
     # chosen components from analysis
     comp1, comp2, comp3 = 0, 1, 2
