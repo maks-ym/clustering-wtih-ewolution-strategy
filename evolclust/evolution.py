@@ -84,6 +84,7 @@ def get_adapt_scores(pop_t, data, true_labs, adapt_function="silhouette", dist_m
         scores = np.array(scores)
         uniq_scores = set(scores)
         if len(uniq_scores) > 2:
+            # TODO: remove set() unnecessery invocation
             scores[scores == -1] = sorted(set(uniq_scores))[1]
         scores = (scores + 1)/2
 

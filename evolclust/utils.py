@@ -1,12 +1,12 @@
 import os
 import time
 
-
 from matplotlib import pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from sklearn.decomposition import PCA
 from sklearn.preprocessing import StandardScaler
 import numpy as np
+import itertools
 
 plot_colors = ["xkcd:blue",
           "xkcd:green",
@@ -176,7 +176,7 @@ def plot_clusters_2d(data, labels, labels_map=None, chosen_comp=[0,1], grid=Fals
     fig.suptitle("PCA", fontsize=12)
     _clusters_2d_core_plot(principal_components, labels, chosen_comp, (1,1,1), 
                            labels_map=labels_map, grid=grid)
-
+    plt.tight_layout()
     plt.show()
 
 
@@ -215,7 +215,9 @@ def plot_clusters_3d(data, labels, labels_map=None):
     # ax.grid()
     plt.show()
 
-def plot_clusters(data, labels, labels_map=None, grid=False):
+
+
+def plot_clusters(data, labels, labels_map=None, grid=False, out_dir=None, filename=None):
     """
     Build 3 2D PCA plots and 1 3D PCA plot
     """
@@ -229,9 +231,9 @@ def plot_clusters(data, labels, labels_map=None, grid=False):
     principal_components = get_principal_components(data, 3)
 
     # 2D
-    _clusters_2d_core_plot(principal_components, labels, [0,1], (3,2,1), labels_map, grid)
-    _clusters_2d_core_plot(principal_components, labels, [0,2], (3,2,3), labels_map, grid)
-    _clusters_2d_core_plot(principal_components, labels, [1,2], (3,2,5), labels_map, grid)
+    _clusters_2d_core_plot(principal_components, labels, [0,1], (3,2,1), labels_map=labels_map, grid=grid)
+    _clusters_2d_core_plot(principal_components, labels, [0,2], (3,2,3), labels_map=labels_map, grid=grid)
+    _clusters_2d_core_plot(principal_components, labels, [1,2], (3,2,5), labels_map=labels_map, grid=grid)
 
     # 3D
     ax = fig.add_subplot(122, projection='3d')
@@ -251,4 +253,64 @@ def plot_clusters(data, labels, labels_map=None, grid=False):
         ax.legend([labels_map[l] for l in labels_uniq])
     else:
         ax.legend(labels_uniq)
-    plt.show()
+
+    if out_dir:
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
+        stamp = str(time.time())
+        if not filename:
+            filename = "clusters_plot"
+        plt.savefig(os.path.join(out_dir, filename + '.png'), bbox_inches='tight')
+    else:
+        plt.show()
+
+
+def _plot_confusion_matrix_core(cm, classes,
+                          normalize=False,
+                          title='Confusion matrix',
+                          cmap=plt.cm.Blues):
+    """
+    This function prints and plots the confusion matrix.
+    Normalization can be applied by setting `normalize=True`.
+    """
+    if normalize:
+        cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+        print("Normalized confusion matrix")
+    else:
+        print('Confusion matrix, without normalization')
+
+    print(cm)
+
+    plt.imshow(cm, interpolation='nearest', cmap=cmap)
+    plt.title(title)
+    plt.colorbar()
+    tick_marks = np.arange(len(classes))
+    plt.xticks(tick_marks, classes, rotation=45)
+    plt.yticks(tick_marks, classes)
+
+    fmt = '.2f' if normalize else 'd'
+    thresh = cm.max() / 2.
+    for i, j in itertools.product(range(cm.shape[0]), range(cm.shape[1])):
+        plt.text(j, i, format(cm[i, j], fmt),
+                 horizontalalignment="center",
+                 color="white" if cm[i, j] > thresh else "black")
+
+    plt.ylabel('True label')
+    plt.xlabel('Predicted label')
+    plt.tight_layout()
+
+
+def plot_confusion_matrix(cm, classes, normalize=False, title='Confusion matrix',
+                          cmap=plt.cm.Blues, out_dir=None, filename=None):
+    plt.figure()
+    _plot_confusion_matrix_core(cm, classes, normalize, title, cmap)
+    
+    if out_dir:
+        if not os.path.isdir(out_dir):
+            os.makedirs(out_dir)
+        stamp = str(time.time())
+        if not filename:
+            filename = "clusters_plot"
+        plt.savefig(os.path.join(out_dir, filename + '.png'), bbox_inches='tight')
+    else:
+        plt.show()
