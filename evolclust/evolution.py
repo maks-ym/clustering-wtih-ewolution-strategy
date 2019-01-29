@@ -130,7 +130,7 @@ def crossover(temp_pop_t, prob_cross = 0.7, loggin_pref=""):
     logging.debug("{}crossover...".format(loggin_pref))
     mod_pop = np.zeros(temp_pop_t.shape)
     n_pairs = len(temp_pop_t) // 2
-    cut_bools = np.random.rand(n_pairs)
+    cut_bools = np.random.rand(n_pairs) < prob_cross
     cut_places = np.random.randint(1, len(temp_pop_t[0][0]), size=n_pairs)
     pairs = [i for i in range(n_pairs)]
 

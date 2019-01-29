@@ -129,18 +129,6 @@ def main():
         utils.plot_avg_scores(iterations_list, scores_list, args.adapt_function, best_indiv_idx_list,
             plot_tuple, to_file=True, out_dirs=log_dir_list)
 
-    # new clusteres
-    # get best individual
-
-    # correct labels
-
-    # cluster train and test data
-
-    # get confusion matrices, accuracy, measure time
-
-    # plot for train and test data, 
-    # utils.plot_clusters(exp_data, exp_labs, exp_labels_map, True)
-
 
 if __name__ == "__main__":
     main()

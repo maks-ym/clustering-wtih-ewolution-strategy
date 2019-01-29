@@ -156,7 +156,7 @@ def main():
             cmap=plt.cm.Blues, out_dir=args.outdir, filename="train_conf_matr_silh_info_gain")
     utils.plot_confusion_matrix(test_conf_mtx, labels_names, normalize=False, 
             title='Confusion matrix\ntest set\n(silh: {:.6}, silh normalized: {:.6}, info gain: {:.6})'.format(test_silh, test_silh_normalized, test_info_gain),
-            cmap=plt.cm.Blues, out_dir=args.outdir, filename="train_conf_matr_silh_info_gain")
+            cmap=plt.cm.Blues, out_dir=args.outdir, filename="test_conf_matr_silh_info_gain")
     print("inference ended")
 
 if __name__ == "__main__":
