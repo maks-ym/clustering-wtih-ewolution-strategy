@@ -1,4 +1,4 @@
-# evolclust - clustering-wtih-ewolution-strategy
+# evolclust - clustering-with-evolution-strategy
 
 Package for testing idea of using evolution strategies in clustering.
 
